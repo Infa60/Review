@@ -77,14 +77,18 @@ def analyze_reliability():
                 global_nh.extend(val2)
 
                 # Logic for text interpretation
-                if kappa < 0.40:
-                    interp = "Weak"
-                elif kappa < 0.60:
-                    interp = "Moderate"
-                elif kappa < 0.80:
-                    interp = "Good"
+                if kappa <= 0.0:
+                    verdict = "Poor"
+                elif kappa <= 0.2:
+                    verdict = "Slight"
+                elif kappa <= 0.4:
+                    verdict = "Fair"
+                elif kappa <= 0.6:
+                    verdict = "Moderate"
+                elif kappa <= 0.8:
+                    verdict = "Substantial"
                 else:
-                    interp = "Excellent"
+                    verdict = "Almost perfect"
 
                 # Special Case: "Kappa Paradox" (Low Kappa but High Agreement)
                 if kappa < 0.40 and agreement > 85:
