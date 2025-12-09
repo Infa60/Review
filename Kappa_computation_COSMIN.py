@@ -5,7 +5,7 @@ import os
 import warnings
 
 # --- CONFIGURATION ---
-file_path = r"C:\Users\bourgema\OneDrive - Université de Genève\Documents\ENABLE\Review\COSMIN_rating.xlsx"
+file_path = r"C:\Users\bourgema\OneDrive - Université de Genève\Documents\ENABLE\Review\COSMIN_kappa.xlsx"
 
 domains = [
     "Reliability",
@@ -34,11 +34,11 @@ def calculate_metrics(v1, v2):
 
             # Kappa
             # Si accord parfait constant (ex: que des '2' partout)
-            if np.array_equal(v1, v2) and len(np.unique(v1)) == 1:
-                kappa = 1.0
-            else:
-                kappa = cohen_kappa_score(v1, v2, weights='linear')
-                if np.isnan(kappa): kappa = 0.0
+            #if np.array_equal(v1, v2) and len(np.unique(v1)) == 1:
+                #kappa = 1.0
+            #else:
+            kappa = cohen_kappa_score(v1, v2, weights='linear')
+            if np.isnan(kappa): kappa = 0.0
 
             return kappa, accord
         except:
