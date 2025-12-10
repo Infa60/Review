@@ -12,18 +12,18 @@ sheet_rater2 = 'QA_NH_v2'
 
 # Exact list of columns (must match Excel headers perfectly)
 columns_of_interest = [
-    "1 Aims and hypothesis clearly stated",
+    "1 Aims and hypotheses clearly stated",
     "2 Ethics and consent",
-    "3 Description of the participant recruitment",
+    "3 Description of participant recruitment",
     "4 Description of the sample",
     "5 Sample size calculation",
-    "6 Instrumented measure description",
-    "7 Description of the movement tasks",
+    "6 Description of instrumented measures",
+    "7 Description of movement tasks",
     "8 Data analysis",
     "9 Main outcomes of the study",
     "10 Statistical analysis",
     "11 Interpretable results",
-    "12 Description of study limits",
+    "12 Description of study limitations",
     "13 Key findings answer the initial objectives"
 ]
 

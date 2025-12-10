@@ -1,62 +1,89 @@
 import pandas as pd
 import matplotlib.pyplot as plt
+import textwrap
+import os
 
-EXCEL_PATH = r"C:\Users\bourgema\OneDrive - Université de Genève\Documents\ENABLE\Review\Full_text_inclusion_v1.xlsx"
+# --- CONFIGURATION ---
+file_path = r"C:\Users\bourgema\OneDrive - Université de Genève\Documents\ENABLE\Review\Quality_assessment_kappa.xlsx"
+sheet_name = "Quality_assessment_results"
+save_path = r"C:\Users\bourgema\OneDrive - Université de Genève\Documents\ENABLE\Review\Quality_assessment_plot.png"
 
-# 1. Define exact column names
-noms_colonnes = [
-    "1 Aims and hypothesis clearly stated",
-    "2 Ethics and consent",
-    "3 Description of the participant recruitment",
-    "4 Description of the sample",
-    "5 Sample size calculation",
-    "6 Instrumented measure description",
-    "7 Description of the movement tasks",
-    "8 Data analysis",
-    "9 Main outcomes of the study",
-    "10 Statistical analysis",
-    "11 Interpretable results",
-    "12 Description of study limits",
-    "13 Key findings answer the initial objectives"
-]
+# Color mapping
+color_map = {
+    0: 'red',  # Inadequate
+    1: 'orange',  # Partial
+    2: 'green'  # Adequate
+}
 
-# --- LOAD DATA ---
-df = pd.read_excel(EXCEL_PATH, sheet_name='QA_NH_v2')
 
-# ---------------------------------------------
+def create_horizontal_quality_chart():
+    if not os.path.exists(file_path):
+        print(f"Error: File not found at path: {file_path}")
+        return
 
-# 2. Count occurrences of 0, 1, and 2 per column
-counts = df[noms_colonnes].apply(pd.Series.value_counts).fillna(0)
+    try:
+        print("Loading data...")
+        df = pd.read_excel(file_path, sheet_name=sheet_name)
 
-# 3. Ensure index order (0, 1, 2) for consistent coloring
-counts = counts.reindex([0, 1, 2])
+        # Select numeric columns only
+        df_scores = df.select_dtypes(include=['number'])
 
-# 4. Create Plot
-plt.figure(figsize=(7, 4))
+        # Calculate counts
+        counts = df_scores.apply(pd.Series.value_counts).fillna(0)
+        counts = counts.reindex([0, 1, 2])
+        counts_t = counts.T
 
-# Create stacked bar chart
-ax = counts.T.plot(kind='bar',
-                   stacked=True,
-                   color=['#d9534f', '#f0ad4e', '#5cb85c'], # Red, Orange, Green
-                   edgecolor='black',
-                   width=0.8,
-                   figsize=(7, 4))
+        # Process Labels (Wrap text with more width allowed)
+        labels_raw = counts_t.index.tolist()
+        # Increased wrap width to 40 because horizontal space is generous
+        labels_wrapped = [textwrap.fill(str(label), 23) for label in labels_raw]
 
-# 5. Formatting (English Labels)
-plt.title("Methodological Quality per Criteria (Score Distribution)", fontsize=12)
-plt.ylabel("Frequency / Number of Studies", fontsize=10)
-plt.xlabel("Evaluation Criteria", fontsize=10)
+        # --- PLOTTING ---
+        print("Generating chart...")
 
-# Rotate x-axis labels
-plt.xticks(rotation=45, ha='right', fontsize=8)
+        # Adjusted size: Taller (8) to accommodate the list of questions
+        fig, ax = plt.subplots(figsize=(10, 8))
 
-# Custom legend configuration in English
-plt.legend(title="Score",
-           labels=['0 (No)', '1 (Partial)', '2 (Yes)'],
-           loc='upper center',
-           bbox_to_anchor=(0.5, -0.35),
-           ncol=3)
+        colors = [color_map[0], color_map[1], color_map[2]]
 
-plt.subplots_adjust(bottom=0.5, top=0.85, left=0.2)
-# 6. Display plot
-plt.show()
+        # CHANGED HERE: 'barh' for Horizontal Bar Chart
+        counts_t.plot(kind='barh', stacked=True, color=colors, ax=ax, width=0.8, edgecolor='black')
+
+        # --- OPTIMIZATIONS ---
+        # 1. Invert Y-axis so Question 1 is at the TOP, not bottom
+        ax.invert_yaxis()
+
+        # 2. Force X-axis limit (Max number of articles)
+        max_width = counts_t.sum(axis=1).max()
+        ax.set_xlim(0, max_width + 0.5)
+
+        # Titles and Labels
+        plt.title('Distribution of quality scores per item', fontsize=14, pad=15)
+        plt.xlabel("Number of articles", fontsize=10)  # Label is now on X-axis
+
+        # Y-Axis settings (The Questions)
+        ax.set_yticklabels(labels_wrapped, fontsize=9)  # Slightly larger font is readable now
+
+        # Legend (Moved to the bottom or right)
+        ax.legend(["0 - Inadequate", "1 - Partial", "2 - Adequate"],
+                  title="Score", bbox_to_anchor=(1.0, 1.0), loc='upper left')
+
+        # Bar Labels (Values inside bars)
+        for c in ax.containers:
+            # Logic to hide 0s remains the same
+            labels = [int(v.get_width()) if v.get_width() > 0 else '' for v in c]
+            ax.bar_label(c, labels=labels, label_type='center', fontsize=7, color='white', weight='bold')
+
+        # Layout adjustment
+        # 'left=0.3' reserves 30% of the image for the long question text
+        plt.subplots_adjust(left=0.17, right=0.83, top=0.9)
+        plt.savefig(save_path)
+        plt.show()
+        print("Chart generated successfully.")
+
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
+
+if __name__ == "__main__":
+    create_horizontal_quality_chart()
