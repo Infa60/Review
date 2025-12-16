@@ -40,14 +40,14 @@ else:
             # Set a minimalist theme
             sns.set_theme(style="white", context="talk")
 
-            plt.figure(figsize=(10, 6))
+            plt.figure(figsize=(9, 3))
 
             # Create Horizontal Bar Plot with a single professional color
             ax = sns.barplot(
                 x="Count",
                 y="Study Type",
                 data=counts,
-                color="slategrey",
+                color="#4c72b0",
                 edgecolor=None
             )
 
@@ -62,13 +62,14 @@ else:
                 )
 
             # Aesthetic cleanup (Removing noise)
-            sns.despine(left=True, bottom=False)  # Remove frame borders
-            ax.set_xlabel("")  # Remove X label (redundant)
+            ax.tick_params(axis='y', labelsize=10)  # Ajustez 'labelsize' à la valeur souhaitée
+            sns.despine(left=True, bottom=True)  # Remove frame borders
+            ax.set_xlabel("Number of articles", fontsize=10)  # Remove X label (redundant)
             ax.set_ylabel("")  # Remove Y label
-            #ax.set_xticks([])  # Remove X axis ticks (0, 5, 10...) for a cleaner look
+            ax.set_xticks([])  # Remove X axis ticks (0, 5, 10...) for a cleaner look
 
             # Title
-            plt.title("Distribution of study designs", fontsize=14, fontweight='bold', pad=20, loc='left')
+            #plt.title("Distribution of study designs", fontsize=22, fontweight='bold', pad=20, loc='left')
 
             plt.tight_layout()
             plt.savefig(save_path)
