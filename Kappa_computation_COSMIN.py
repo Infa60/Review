@@ -15,7 +15,7 @@ domains = [
     "Discriminative validity"
 ]
 
-suffixes = ("_MB", "_NH")
+suffixes = ("_NH", "_MB")
 
 # Stockage pour le Grand Total
 grand_total_mb = []
@@ -37,7 +37,7 @@ def calculate_metrics(v1, v2):
             #if np.array_equal(v1, v2) and len(np.unique(v1)) == 1:
                 #kappa = 1.0
             #else:
-            kappa = cohen_kappa_score(v1, v2, weights='linear')
+            kappa = cohen_kappa_score(v1, v2, weights="quadratic")
             if np.isnan(kappa): kappa = 0.0
 
             return kappa, accord
