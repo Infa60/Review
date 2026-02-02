@@ -5,14 +5,13 @@ import numpy as np
 
 # 1. Configuration des chemins
 file_path = r"C:\Users\bourgema\OneDrive - Université de Genève\Documents\ENABLE\Review\Full_text_inclusion_v1.xlsx"
-output_path = r"C:\Users\bourgema\OneDrive - Université de Genève\Documents\ENABLE\Review\Plot\Combined_Full_Analysis.png"
+output_path = r"C:\Users\bourgema\OneDrive - Université de Genève\Documents\ENABLE\Review\Plot\Combined_Full_Analysis_part2.png"
 
 # --- Listes des colonnes ---
-activity_columns = ["Sit-to-stand", "Running", "Cycling", "Stair-negotiation", "Obstacle-clearance", "Game",
-                    "Jumping", "Time-Up-and-Go", "One-leg-standing", "Stepping-target", "Hopping", "Squat",
-                    "Kicking-a-ball"]
 
-tool_columns = ["Optoelectronic", "Force-plate", "EMG", "Heart-rate-monitor", "Metabolic-cart", "IMU", "Wii-fit", "Other-tools"]
+activity_columns = ["Optoelectronic", "Force-plate", "EMG", "Heart-rate-monitor", "Metabolic-cart", "IMU", "Wii-fit", "Other-tools"]
+
+outcome_columns = ["Spatiotemporal", "Kinematic", "Kinetic", "Electromyographic", "Metabolic", "Stability", "Score"]
 gmfcs_columns = ["GMFCS-I", "GMFCS-II", "GMFCS-III", "GMFCS-IV"]
 topo_columns = ["Hemiplegic", "Diplegic", "Quadriplegic"]
 motor_columns = ["Spastic", "Ataxic", "Dyskinetic", "Mixed"]
@@ -21,7 +20,7 @@ motor_columns = ["Spastic", "Ataxic", "Dyskinetic", "Mixed"]
 def norm_rgb(r, g, b): return (r / 255, g / 255, b / 255)
 
 colors_rgb = {
-    'TOOLS': [norm_rgb(30, 80, 40)] * 8,
+    'OUTCOME': [norm_rgb(40, 90, 190)] * 7,
     'GMFCS': [norm_rgb(120, 0, 0), norm_rgb(160, 20, 20), norm_rgb(200, 40, 40), norm_rgb(230, 80, 80), norm_rgb(255, 150, 150)],
     'TOPOGRAPHY': [norm_rgb(150, 120, 0), norm_rgb(200, 160, 0), norm_rgb(240, 200, 20), norm_rgb(255, 230, 80)],
     'CP SUBTYPE': [norm_rgb(120, 45, 0), norm_rgb(165, 60, 0), norm_rgb(210, 85, 0), norm_rgb(240, 120, 30), norm_rgb(255, 160, 80)]
@@ -56,17 +55,18 @@ try:
                 mat.loc["Unknown", c_col] = df.apply(lambda row: is_unknown_row(row, existing_rows) and row[c_col] == 1, axis=1).sum()
         return mat
 
-    m_tools = get_matrix(tool_columns, activity_columns, False)
+    m_outcome = get_matrix(outcome_columns, activity_columns, False)
+
     m_gmfcs = get_matrix(gmfcs_columns, activity_columns, True)
     m_topo = get_matrix(topo_columns, activity_columns, True)
     m_motor = get_matrix(motor_columns, activity_columns, True)
 
     # --- MODIFICATIONS POUR CASES ÉTROITES ET LISIBILITÉ ---
     # Largeur réduite à 10 pour des cases étroites. Hauteur à 14 pour garder de l'espace vertical.
-    height_ratios = [len(m_tools), len(m_gmfcs), len(m_topo), len(m_motor)]
-    fig, axes = plt.subplots(4, 1, figsize=(10, 14), sharex=True, gridspec_kw={'height_ratios': height_ratios})
+    height_ratios = [len(m_outcome), len(m_gmfcs), len(m_topo), len(m_motor)]
+    fig, axes = plt.subplots(4, 1, figsize=(9, 11), sharex=True, gridspec_kw={'height_ratios': height_ratios})
 
-    blocks = [(m_tools, 'TOOLS', axes[0]), (m_gmfcs, 'GMFCS', axes[1]),
+    blocks = [(m_outcome, 'OUTCOME', axes[0]), (m_gmfcs, 'GMFCS', axes[1]),
               (m_topo, 'TOPOGRAPHY', axes[2]), (m_motor, 'CP SUBTYPE', axes[3])]
 
     for mat, group_name, ax in blocks:

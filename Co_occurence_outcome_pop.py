@@ -5,11 +5,12 @@ import numpy as np
 
 # 1. Configuration des chemins
 file_path = r"C:\Users\bourgema\OneDrive - Université de Genève\Documents\ENABLE\Review\Full_text_inclusion_v1.xlsx"
-output_path = r"C:\Users\bourgema\OneDrive - Université de Genève\Documents\ENABLE\Review\Plot\Combined_Full_Analysis_part2.png"
+output_path = r"C:\Users\bourgema\OneDrive - Université de Genève\Documents\ENABLE\Review\Plot\Combined_Full_Analysis_part3.png"
 
+# --- Listes des colonnes ---
 
+activity_columns = ["Spatiotemporal", "Kinematic", "Kinetic", "Electromyographic", "Metabolic", "Stability", "Score"]
 
-activity_columns = ["Optoelectronic", "Force-plate", "EMG", "Heart-rate-monitor", "Metabolic-cart", "IMU", "Wii-fit", "Other-tools"]
 gmfcs_columns = ["GMFCS-I", "GMFCS-II", "GMFCS-III", "GMFCS-IV"]
 topo_columns = ["Hemiplegic", "Diplegic", "Quadriplegic"]
 motor_columns = ["Spastic", "Ataxic", "Dyskinetic", "Mixed"]
@@ -52,6 +53,7 @@ try:
                 mat.loc["Unknown", c_col] = df.apply(lambda row: is_unknown_row(row, existing_rows) and row[c_col] == 1, axis=1).sum()
         return mat
 
+
     m_gmfcs = get_matrix(gmfcs_columns, activity_columns, True)
     m_topo = get_matrix(topo_columns, activity_columns, True)
     m_motor = get_matrix(motor_columns, activity_columns, True)
@@ -59,7 +61,7 @@ try:
     # --- MODIFICATIONS POUR CASES ÉTROITES ET LISIBILITÉ ---
     # Largeur réduite à 10 pour des cases étroites. Hauteur à 14 pour garder de l'espace vertical.
     height_ratios = [len(m_gmfcs), len(m_topo), len(m_motor)]
-    fig, axes = plt.subplots(3, 1, figsize=(7, 10), sharex=True, gridspec_kw={'height_ratios': height_ratios})
+    fig, axes = plt.subplots(3, 1, figsize=(7, 8.5), sharex=True, gridspec_kw={'height_ratios': height_ratios})
 
     blocks = [(m_gmfcs, 'GMFCS', axes[0]),
               (m_topo, 'TOPOGRAPHY', axes[1]), (m_motor, 'CP SUBTYPE', axes[2])]
