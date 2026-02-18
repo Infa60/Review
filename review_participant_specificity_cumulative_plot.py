@@ -183,10 +183,10 @@ ax.add_patch(plt.Circle((0, 0), 0.40, fill=False, edgecolor='black', linewidth=2
 for i, wedge in enumerate(wedges_interne):
     angle_centre = (wedge.theta1 + wedge.theta2) / 2
     draw_curved_text(labels_interne[i], radius=0.53, center_angle=angle_centre,
-                     ax=ax, fontsize=13, facteur_espacement=0.12)
+                     ax=ax, fontsize=16, facteur_espacement=0.12)
 
 for t in text_externe:
-    t.set_fontsize(13)
+    t.set_fontsize(22)
 
 centre_circle = plt.Circle((0, 0), 0.39, fc='white')
 fig.gca().add_artist(centre_circle)
@@ -194,6 +194,6 @@ fig.gca().add_artist(centre_circle)
 plt.text(0, 0, f"TOTAL CHILDREN\nN = {int(GRAND_TOTAL)}", ha='center', va='center', fontsize=14, fontweight='bold')
 plt.title("Clinical Characteristics Overview", fontsize=16, pad=20)
 plt.tight_layout()
-plt.savefig(r"C:\Users\bourgema\OneDrive - Université de Genève\Documents\ENABLE\Review\Plot\Figure_2.svg",
+plt.savefig(r"C:\Users\bourgema\OneDrive - Université de Genève\Documents\ENABLE\Review\Plot\Population_cumulative.svg",
             format='svg', bbox_inches='tight')
 plt.show()

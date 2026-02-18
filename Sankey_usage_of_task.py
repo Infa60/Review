@@ -14,7 +14,7 @@ category_settings = {
     "Assessment": "#ff7f0e",  # Orange
     "Daily life improvement": "#2ca02c",  # Vert
     "Rehabilitation": "#d62728",  # Rouge
-    "Ecology": "#9467bd"  # Violet
+    #"Ecology": "#9467bd"  # Violet
 }
 
 categories = list(category_settings.keys())
