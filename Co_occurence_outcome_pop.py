@@ -9,7 +9,7 @@ output_path = r"C:\Users\bourgema\OneDrive - Université de Genève\Documents\EN
 
 # --- Listes des colonnes ---
 
-activity_columns = ["Spatiotemporal", "Kinematic", "Kinetic", "Electromyographic", "Metabolic", "Stability", "Score"]
+activity_columns = ["Spatiotemporal", "Kinematics", "Kinetics", "Electromyographic", "Metabolic", "Stability", "Score"]
 
 gmfcs_columns = ["GMFCS-I", "GMFCS-II", "GMFCS-III", "GMFCS-IV"]
 topo_columns = ["Hemiplegic", "Diplegic", "Quadriplegic"]

@@ -11,7 +11,7 @@ output_path = r"C:\Users\bourgema\OneDrive - Université de Genève\Documents\EN
 
 activity_columns = ["Optoelectronic", "Force-plate", "EMG", "Heart-rate-monitor", "Metabolic-cart", "IMU", "Wii-fit", "Other-tools"]
 
-outcome_columns = ["Spatiotemporal", "Kinematic", "Kinetic", "Electromyographic", "Metabolic", "Stability", "Score"]
+outcome_columns = ["Spatiotemporal", "Kinematics", "Kinetics", "Electromyographic", "Metabolic", "Stability", "Score"]
 gmfcs_columns = ["GMFCS-I", "GMFCS-II", "GMFCS-III", "GMFCS-IV"]
 topo_columns = ["Hemiplegic", "Diplegic", "Quadriplegic"]
 motor_columns = ["Spastic", "Ataxic", "Dyskinetic", "Mixed"]
