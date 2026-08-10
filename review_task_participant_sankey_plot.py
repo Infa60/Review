@@ -43,8 +43,9 @@ def main():
         else:
             df[col] = 0
 
-    if 'GMFCS-I' in df.columns:
-        df['is_gmfcs_unk'] = df['GMFCS-I'].apply(lambda x: 1 if str(x).strip() == '???' else 0)
+    # GMFCS "Unspecified" basé sur la colonne dédiée (X ou nombre > 0) au lieu de "???".
+    if 'GMFCS-Unspecified' in df.columns:
+        df['is_gmfcs_unk'] = df['GMFCS-Unspecified'].apply(clean)
     else:
         df['is_gmfcs_unk'] = 0
 
@@ -129,7 +130,10 @@ def main():
         if not tasks: continue
 
         gmfcs = [g for g in L_GMFCS if row[g] == 1]
-        if row['is_gmfcs_unk'] == 1 or not gmfcs:
+        # Un article peut avoir un niveau précis ET des participants "Unspecified".
+        if row['is_gmfcs_unk'] == 1:
+            gmfcs.append(UNK_GMFCS)
+        if not gmfcs:
             gmfcs = [UNK_GMFCS]
 
         for t in tasks:

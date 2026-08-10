@@ -43,8 +43,13 @@ else:
             if check_status(row[col]):
                 present_types.append(col)
 
+        # "Unspecified" basé sur la colonne dédiée (X ou nombre > 0),
+        # cumulable avec un sous-type précis (ex: "Ataxic + Unspecified").
+        if 'unknown_subtype' in df.columns and check_status(row['unknown_subtype']):
+            present_types.append("Unspecified")
+
         if not present_types:
-            return "Unspecified / None"
+            return "None"
         return " + ".join(present_types)
 
 

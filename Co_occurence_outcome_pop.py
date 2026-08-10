@@ -40,7 +40,7 @@ try:
     df = pd.read_excel(file_path, sheet_name=0)
     df.columns = df.columns.str.strip()
 
-    def get_matrix(rows_list, cols_list, add_unknown=False):
+    def get_matrix(rows_list, cols_list, add_unknown=False, na_column=None):
         existing_rows = [c for c in rows_list if c in df.columns]
         display_rows = existing_rows.copy()
         if add_unknown: display_rows.append("Unknown")
@@ -50,13 +50,18 @@ try:
                 mat.loc[r_col, c_col] = df.apply(lambda row: is_valid_entry(row[r_col]) and row[c_col] == 1, axis=1).sum()
         if add_unknown:
             for c_col in cols_list:
-                mat.loc["Unknown", c_col] = df.apply(lambda row: is_unknown_row(row, existing_rows) and row[c_col] == 1, axis=1).sum()
+                if na_column and na_column in df.columns:
+                    # Unspecified basé sur une colonne dédiée (X = présent, nombre inconnu).
+                    mat.loc["Unknown", c_col] = df.apply(lambda row: is_valid_entry(row[na_column]) and row[c_col] == 1, axis=1).sum()
+                else:
+                    # Ancien mécanisme "???" (topographie).
+                    mat.loc["Unknown", c_col] = df.apply(lambda row: is_unknown_row(row, existing_rows) and row[c_col] == 1, axis=1).sum()
         return mat
 
 
-    m_gmfcs = get_matrix(gmfcs_columns, activity_columns, True)
+    m_gmfcs = get_matrix(gmfcs_columns, activity_columns, True, na_column="GMFCS-Unspecified")
     m_topo = get_matrix(topo_columns, activity_columns, True)
-    m_motor = get_matrix(motor_columns, activity_columns, True)
+    m_motor = get_matrix(motor_columns, activity_columns, True, na_column="unknown_subtype")
 
     # --- MODIFICATIONS POUR CASES ÉTROITES ET LISIBILITÉ ---
     # Largeur réduite à 10 pour des cases étroites. Hauteur à 14 pour garder de l'espace vertical.

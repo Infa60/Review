@@ -50,7 +50,7 @@ try:
     if not active_activities:
         print("Aucun article trouvé avec les critères de l'environnement spécifié.")
     else:
-        def get_matrix(rows_list, cols_list, add_unknown=False):
+        def get_matrix(rows_list, cols_list, add_unknown=False, na_column=None):
             existing_rows = [c for c in rows_list if c in df.columns]
             display_rows = existing_rows.copy()
             if add_unknown: display_rows.append("Unknown")
@@ -61,15 +61,21 @@ try:
                                                      axis=1).sum()
             if add_unknown:
                 for c_col in active_activities:
-                    mat.loc["Unknown", c_col] = df.apply(
-                        lambda row: is_unknown_row(row, existing_rows) and row[c_col] == 1, axis=1).sum()
+                    if na_column and na_column in df.columns:
+                        # Unspecified basé sur une colonne dédiée (X = présent, nombre inconnu).
+                        mat.loc["Unknown", c_col] = df.apply(
+                            lambda row: is_valid_entry(row[na_column]) and row[c_col] == 1, axis=1).sum()
+                    else:
+                        # Ancien mécanisme "???" (topographie).
+                        mat.loc["Unknown", c_col] = df.apply(
+                            lambda row: is_unknown_row(row, existing_rows) and row[c_col] == 1, axis=1).sum()
             return mat
 
 
         m_tools = get_matrix(tool_columns, active_activities, False)
-        m_gmfcs = get_matrix(gmfcs_columns, active_activities, True)
+        m_gmfcs = get_matrix(gmfcs_columns, active_activities, True, na_column="GMFCS-Unspecified")
         m_topo = get_matrix(topo_columns, active_activities, True)
-        m_motor = get_matrix(motor_columns, active_activities, True)
+        m_motor = get_matrix(motor_columns, active_activities, True, na_column="unknown_subtype")
 
         # --- Plotting Compact (Largeur ajustée au nombre de tâches trouvées) ---
         width = max(6, len(active_activities) * 1.2)

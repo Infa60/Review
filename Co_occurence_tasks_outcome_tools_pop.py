@@ -5,16 +5,16 @@ import numpy as np
 
 # 1. Configuration des chemins
 file_path = r"C:\Users\bourgema\OneDrive - Université de Genève\Documents\ENABLE\Review\Full_text_inclusion_v1.xlsx"
-output_path = r"C:\Users\bourgema\OneDrive - Université de Genève\Documents\ENABLE\Review\Plot\Combined_Full_Analysis.png"
+output_path = r"C:\Users\bourgema\OneDrive - Université de Genève\Documents\ENABLE\Review\Plot\Combined_Full_Analysis4.png"
 
 # --- Listes des colonnes ---
-activity_columns = ["Sit-to-stand", "Running", "Cycling", "Stair-negotiation", "Obstacle-clearance", "Game",
-                    "Jumping", "Time-Up-and-Go", "One-leg-standing", "Stepping-target", "Hopping", "Squat",
-                    "Kicking-a-ball"]
+activity_columns = ["Sit-to-stand", "Running", "Cycling", "Stair-negotiation", "Game", "Obstacle-clearance",
+                    "Stepping-target", "Jumping", "Timed-Up-and-Go", "One-leg-standing", "Squat", "Hopping",
+                    "Climbing"]
 
 tool_columns = ["Optoelectronic", "Force-plate", "EMG", "Heart-rate-monitor", "Metabolic-cart", "IMU", "Wii-fit",
                 "Other-tools"]
-outcome_columns = ["Spatiotemporal", "Kinematics", "Kinetics", "Electromyographic", "Metabolic", "Stability", "Score"]
+outcome_columns = ["Spatiotemporal", "Kinematics", "Kinetics", "Electromyographic", "Metabolic", "Score"]
 gmfcs_columns = ["GMFCS-I", "GMFCS-II", "GMFCS-III", "GMFCS-IV"]
 topo_columns = ["Hemiplegic", "Diplegic", "Quadriplegic"]
 motor_columns = ["Spastic", "Ataxic", "Dyskinetic", "Mixed"]
@@ -56,7 +56,7 @@ try:
     df.columns = df.columns.str.strip()
 
 
-    def get_matrix(rows_list, cols_list, add_unknown=False):
+    def get_matrix(rows_list, cols_list, add_unknown=False, na_column=None):
         existing_rows = [c for c in rows_list if c in df.columns]
         display_rows = existing_rows.copy()
         if add_unknown: display_rows.append("Unknown")
@@ -67,17 +67,25 @@ try:
                                                  axis=1).sum()
         if add_unknown:
             for c_col in cols_list:
-                mat.loc["Unknown", c_col] = df.apply(lambda row: is_unknown_row(row, existing_rows) and row[c_col] == 1,
-                                                     axis=1).sum()
+                if na_column and na_column in df.columns:
+                    # Unspecified basé sur une colonne dédiée (X = présent, nombre inconnu).
+                    mat.loc["Unknown", c_col] = df.apply(
+                        lambda row: is_valid_entry(row[na_column]) and row[c_col] == 1,
+                        axis=1).sum()
+                else:
+                    # Ancien mécanisme "???" (topographie).
+                    mat.loc["Unknown", c_col] = df.apply(
+                        lambda row: is_unknown_row(row, existing_rows) and row[c_col] == 1,
+                        axis=1).sum()
         return mat
 
 
     m_tools = get_matrix(tool_columns, activity_columns, False)
     m_outcome = get_matrix(outcome_columns, activity_columns, False)
 
-    m_gmfcs = get_matrix(gmfcs_columns, activity_columns, True)
+    m_gmfcs = get_matrix(gmfcs_columns, activity_columns, True, na_column="GMFCS-Unspecified")
     m_topo = get_matrix(topo_columns, activity_columns, True)
-    m_motor = get_matrix(motor_columns, activity_columns, True)
+    m_motor = get_matrix(motor_columns, activity_columns, True, na_column="unknown_subtype")
 
     height_ratios = [len(m_tools), len(m_outcome), len(m_gmfcs), len(m_topo), len(m_motor)]
     fig, axes = plt.subplots(5, 1, figsize=(12, 16), sharex=True, gridspec_kw={'height_ratios': height_ratios})
@@ -106,11 +114,13 @@ try:
                         color="white" if (val / max_val > 0.5) else "black")
 
         ax.set_yticks(np.arange(len(mat.index)))
-        ax.set_yticklabels(mat.index, fontsize=11)
+        # Remplace les tirets par des espaces pour les labels en Y
+        ax.set_yticklabels([str(label).replace('-', ' ') for label in mat.index], fontsize=11)
 
         # On définit les xticks pour chaque axe (nécessaire même si sharex=True)
         ax.set_xticks(np.arange(len(activity_columns)))
-        ax.set_xticklabels(activity_columns, fontsize=11)
+        # Remplace les tirets par des espaces pour les labels en X
+        ax.set_xticklabels([label.replace('-', ' ') for label in activity_columns], fontsize=11)
 
         ax.set_xticks(np.arange(-.5, len(activity_columns), 1), minor=True)
         ax.set_yticks(np.arange(-.5, len(mat.index), 1), minor=True)

@@ -4,7 +4,7 @@ import textwrap
 import os
 
 # --- CONFIGURATION ---
-file_path = r"C:\Users\bourgema\OneDrive - Université de Genève\Documents\ENABLE\Review\Quality_assessment_kappa.xlsx"
+file_path = r"C:\Users\bourgema\OneDrive - Université de Genève\Documents\ENABLE\Review\Manuscrit_Systematic_Review\Table\Additional_2_File_quality_assessment.xlsx"
 sheet_name = "Quality_assessment_results"
 save_path = r"C:\Users\bourgema\OneDrive - Université de Genève\Documents\ENABLE\Review\Quality_assessment_plot.png"
 

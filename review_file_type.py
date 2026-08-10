@@ -33,6 +33,16 @@ else:
             counts = df[column_name].value_counts().reset_index()
             counts.columns = ['Study Type', 'Count']
 
+            # Calculate percentages
+            total_articles = counts['Count'].sum()
+            counts['Percentage'] = (counts['Count'] / total_articles * 100).round(1)
+
+            # Print the results to the console
+            print("\n--- Distribution of Study Types ---")
+            for index, row in counts.iterrows():
+                print(f"- {row['Study Type']}: {row['Count']} ({row['Percentage']}%)")
+            print("-----------------------------------\n")
+
             # ==========================================
             # 3. PLOTTING (SOBER STYLE)
             # ==========================================
@@ -64,7 +74,7 @@ else:
             # Aesthetic cleanup (Removing noise)
             ax.tick_params(axis='y', labelsize=10)  # Ajustez 'labelsize' à la valeur souhaitée
             sns.despine(left=True, bottom=True)  # Remove frame borders
-            ax.set_xlabel("Number of articles", fontsize=10)  # Remove X label (redundant)
+            ax.set_xlabel("Number of articles", fontsize=10)
             ax.set_ylabel("")  # Remove Y label
             ax.set_xticks([])  # Remove X axis ticks (0, 5, 10...) for a cleaner look
 
@@ -72,7 +82,7 @@ else:
             #plt.title("Distribution of study designs", fontsize=22, fontweight='bold', pad=20, loc='left')
 
             plt.tight_layout()
-            plt.savefig(save_path)
+            # plt.savefig(save_path)
             plt.show()
 
     except Exception as e:
